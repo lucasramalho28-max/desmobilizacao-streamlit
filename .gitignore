@@ -1,0 +1,15 @@
+# Streamlit runtime and source data are not committed
+.venv/
+__pycache__/
+*.py[cod]
+*.db
+*.db-shm
+*.db-wal
+.streamlit/secrets.toml
+.env
+1.09/
+9.09/
+Bakup/
+Lista final_298 lojas 1.xlsx
+Desmobilizacao_atualizada.pptx
+*.pdf

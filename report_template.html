@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatorio de Desmobilizacao | Casas Bahia</title>
+  <style>
+    :root {
+      --cb-blue-header: #000DF0;
+      --cb-red-top: #E30613;
+      --cb-badge-red: #DF0B1C;
+      --cb-title-blue: #004687;
+      --cb-text-dark: #222222;
+      --cb-footer-gray: #595959;
+      --bg-page: #E5E7EB;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--cb-text-dark);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* PAINEL DE CONTROLE E CONFERÊNCIA (OCULTO NA IMPRESSÃO / PDF) */
+    .control-panel {
+      width: 100%;
+      max-width: 1200px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-top: 5px solid var(--cb-blue-header);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #E2E8F0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0F172A;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 3px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--cb-blue-header);
+      color: #FFFFFF;
+    }
+    .btn-primary:hover {
+      background: #0009B3;
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .pdf-export-status {
+      max-width: 250px;
+      align-self: center;
+      color: #475569;
+      font-size: 10.5px;
+      line-height: 1.25;
+    }
+
+    .source-status {
+      margin: 0 0 12px;
+      padding: 8px 12px;
+      border-left: 4px solid #2563EB;
+      border-radius: 4px;
+      background: #EFF6FF;
+      color: #1E3A8A;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .btn-outline {
+      background: #F8FAFC;
+      color: #0F172A;
+      border: 1px solid #CBD5E1;
+    }
+    .btn-outline:hover {
+      background: #E2E8F0;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .upload-box {
+      border: 2px dashed #94A3B8;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      background: #F8FAFC;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .upload-box:hover {
+      border-color: var(--cb-blue-header);
+      background: #EFF6FF;
+    }
+
+    .upload-box input {
+      display: none;
+    }
+
+    .upload-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0F172A;
+    }
+
+    .upload-desc {
+      font-size: 11px;
+      color: #475569;
+    }
+
+    .upload-desc span {
+      color: var(--cb-blue-header);
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    .rules-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      background: #F1F5F9;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    .rule-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .rule-item label {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #334155;
+      text-transform: uppercase;
+    }
+
+    .rule-item select, .rule-item input {
+      padding: 5px 8px;
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      font-size: 12px;
+      background: #FFFFFF;
+    }
+
+    .settings-save {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 5px;
+    }
+
+    .settings-status {
+      min-height: 13px;
+      color: #475569;
+      font-size: 10.5px;
+      line-height: 1.2;
+    }
+
+    .branch-tags-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .branch-tags-header {
+      font-size: 11px;
+      font-weight: 800;
+      color: #475569;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .branch-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .branch-tag {
+      background: #E0E7FF;
+      color: #1E3A8A;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* CONTAINER DOS SLIDES 16:9 */
+    .presentation-container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* SLIDE EXATO 16:9 CONFORME IMAGEM DE CONFERÊNCIA */
+    .slide {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #FFFFFF;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+    }
+
+    /* TOPO DO SLIDE 2 IDÊNTICO À IMAGEM ENVIADA */
+    .top-banner-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-red-stripe {
+      width: 100%;
+      height: 11px;
+      background-color: var(--cb-red-top);
+    }
+
+    .top-blue-banner {
+      width: 100%;
+      height: 76px;
+      background-color: var(--cb-blue-header);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 54px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    }
+
+    .banner-title {
+      color: #FFFFFF;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .banner-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .banner-cd-badge {
+      background: rgba(255, 255, 255, 0.18);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .banner-brand {
+      color: #FFFFFF;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* CORPO DO SLIDE 2 (LISTA VERTICAL 01 A 06 IDÊNTICA À IMAGEM) */
+    .slide-body {
+      flex: 1;
+      padding: 14px 54px 10px 54px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide-lead {
+      font-size: 15px;
+      color: #333333;
+      margin-bottom: 8px;
+    }
+
+    .items-vertical-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      padding-left: 20px;
+    }
+
+    .premise-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .red-num-box {
+      width: 54px;
+      height: 50px;
+      background-color: var(--cb-badge-red);
+      color: #FFFFFF;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.22);
+    }
+
+    .premise-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .premise-heading {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--cb-title-blue);
+      line-height: 1.15;
+    }
+
+    .premise-desc {
+      font-size: 16.5px;
+      color: var(--cb-text-dark);
+      font-weight: 400;
+      line-height: 1.25;
+    }
+
+    /* RODAPÉ IDÊNTICO À IMAGEM */
+    .slide-footer-area {
+      padding: 0 46px 12px 46px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .footer-red-line {
+      width: 100%;
+      height: 2px;
+      background-color: #C00000;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--cb-footer-gray);
+    }
+
+    .footer-left-text {
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .footer-center-text {
+      color: #7F7F7F;
+      font-size: 12px;
+    }
+
+    .footer-credit {
+      margin-left: 3px;
+      color: #94A3B8;
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .footer-right-page {
+      font-weight: 600;
+      color: var(--cb-footer-gray);
+    }
+
+    /* SLIDE DE CAPA */
+    .cover-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0 72px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F4F6FB 100%);
+    }
+
+    .cover-tag {
+      background: var(--cb-red-top);
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .cover-main-title {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--cb-blue-header);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .cover-sub {
+      font-size: 20px;
+      color: #334155;
+      font-weight: 500;
+    }
+
+    /* TABELA DO SLIDE DE RESUMO GERAL */
+    .summary-table-wrap {
+      flex: 1;
+      min-height: 0;
+      overflow: visible;
+      margin-top: 6px;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      table-layout: fixed;
+    }
+
+    .summary-table th {
+      background: var(--cb-blue-header);
+      color: #FFFFFF;
+      text-align: left;
+      padding: 4px 4px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-table td {
+      padding: 3px 4px;
+      border-bottom: 1px solid #E2E8F0;
+      overflow-wrap: anywhere;
+      color: #1E293B;
+    }
+
+    .summary-table tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+
+    .summary-table tr.total-row {
+      background: #E0E7FF;
+      font-weight: 800;
+      border-top: 2px solid var(--cb-blue-header);
+    }
+
+    .overall-total-list {
+      flex: 1;
+      min-height: 0;
+      margin-top: 6px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: minmax(38px, auto);
+      gap: 7px 12px;
+    }
+
+    .overall-total-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 12px;
+      border: 1px solid #CBD5E1;
+      border-left: 4px solid var(--cb-blue-header);
+      border-radius: 5px;
+      background: #F8FAFC;
+      color: #263238;
+      font-size: 13px;
+    }
+
+    .overall-total-item strong {
+      color: var(--cb-title-blue);
+      font-size: 17px;
+      white-space: nowrap;
+    }
+
+    .overall-total-item.total-highlight {
+      border-left-color: var(--cb-red-top);
+      background: #FFF7F7;
+    }
+
+    /* PÁGINA DE METODOLOGIA */
+    .methodology-body {
+      gap: 8px;
+    }
+
+    .methodology-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .methodology-card {
+      min-height: 0;
+      padding: 11px 13px;
+      border: 1px solid #CBD5E1;
+      border-left: 5px solid var(--cb-blue-header);
+      border-radius: 6px;
+      background: #F8FAFC;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .methodology-card h3 {
+      font-size: 16px;
+      line-height: 1.15;
+      color: var(--cb-title-blue);
+    }
+
+    .methodology-card p,
+    .methodology-card li {
+      font-size: 12.5px;
+      line-height: 1.3;
+      color: #263238;
+    }
+
+    .methodology-card ul {
+      margin-left: 18px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .methodology-equation {
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: #E0E7FF;
+      color: #1E3A8A;
+      font-size: 12.5px;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .methodology-note {
+      padding: 7px 10px;
+      border-left: 4px solid var(--cb-red-top);
+      background: #FFF7F7;
+      color: #5B2020;
+      font-size: 11.5px;
+      line-height: 1.3;
+    }
+
+    [contenteditable="true"]:hover {
+      outline: 1px dashed #94A3B8;
+      border-radius: 3px;
+    }
+
+    @page {
+      size: 13.333in 7.5in;
+      margin: 0;
+    }
+
+    @media print {
+      html,
+      body {
+        width: 100%;
+        min-height: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block;
+        background: #FFFFFF !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      *,
+      *::before,
+      *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .control-panel {
+        display: none !important;
+      }
+
+      .presentation-container {
+        display: block;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        gap: 0;
+      }
+
+      .slide {
+        box-sizing: border-box;
+        width: 13.333in;
+        height: 7.5in;
+        min-height: 7.5in;
+        aspect-ratio: 16 / 9;
+        margin: 0;
+        box-shadow: none;
+        overflow: hidden;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        break-after: page;
+        page-break-after: always;
+      }
+
+      .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAINEL DE CONTROLE -->
+  <div class="control-panel" id="controlPanel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">📂 Gerador de Apresentação de Desmobilização — Conferência CD 1600 & Replicação para Todos os CDs</div>
+        <div class="panel-subtitle">
+          Layout idêntico à imagem de conferência • Separação rigorosa entre códigos de <strong>CD (Unid. Log.)</strong> e códigos das <strong>298 Lojas Desmobilizadas</strong>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outline" type="button" id="refreshDataButton" onclick="refreshDataFromLocalRoot()">Atualizar dados</button>
+        <button class="btn btn-primary" type="button" id="exportPdfButton" onclick="exportPdf()" disabled>&#128424; Exportar PDF / Imprimir Slides</button>
+        <div id="statusRoot" class="pdf-export-status" role="status" aria-live="polite">Conectando as pastas locais...</div>
+        <div class="pdf-export-status" id="pdfExportStatus" role="status" aria-live="polite">Carregue as bases 1.09 e 9.09 para liberar o PDF.</div>
+      </div>
+    </div>
+
+    <div class="source-status" id="sourceStatus" role="status" aria-live="polite">As fontes serao lidas automaticamente desta pasta ao abrir o relatorio.</div>
+
+    <div class="rules-bar">
+      <div class="rule-item">
+        <label>Origem Qtd. Lojas Desmobilizadas (298 Lojas)</label>
+        <select id="storeCountSource" onchange="markSettingsUnsaved(); recalculateAllCDs()">
+          <option value="transp">Lista final_298 lojas 1.xlsx - aba Transp (CD 1600: 7 | total: 298)</option>
+          <option value="custo">Lista final_298 lojas 1.xlsx - aba Custo Frete (CD 1600: 7 | total: 298)</option>
+        </select>
+      </div>
+
+      <div class="rule-item">
+        <label>02. C&oacute;digo BOA &rarr; QEB</label>
+        <input type="text" id="codesBoaToQeb" value="80" oninput="markSettingsUnsaved(); recalculateAllCDs()" />
+      </div>
+
+      <div class="rule-item">
+        <label>03. C&oacute;digo QEB &rarr; BOA</label>
+        <input type="text" id="codesQebToBoa" value="82" oninput="markSettingsUnsaved(); recalculateAllCDs()" />
+      </div>
+
+      <div class="rule-item">
+        <label>04. C&oacute;digo QEB &rarr; Saldo</label>
+        <input type="text" id="codesQebToSld" value="T1" oninput="markSettingsUnsaved(); recalculateAllCDs()" />
+      </div>
+
+      <div class="rule-item">
+        <label>05. Retorno de mercadoria sem d&eacute;bito</label>
+        <input type="text" id="codesAvReturn" value="AV" oninput="markSettingsUnsaved(); recalculateAllCDs()" />
+      </div>
+
+      <div class="settings-save">
+        <button class="btn btn-primary" type="button" onclick="saveCurrentSettings()">Salvar configura&ccedil;&otilde;es</button>
+        <div id="saveConfigStatus" class="settings-status" role="status" aria-live="polite">Edite os campos e salve para manter as altera&ccedil;&otilde;es neste navegador.</div>
+      </div>
+    </div>
+
+    <div class="branch-tags-box">
+      <div class="branch-tags-header">
+        <span>🏢 Unidades Logísticas (CDs) Separadas das 298 Lojas Desmobilizadas</span>
+        <span id="totalLoadedBadge" style="color:var(--cb-blue-header);">19 CDs Oficiais | 298 Lojas</span>
+      </div>
+      <div class="branch-list" id="branchList"></div>
+    </div>
+  </div>
+
+  <!-- SLIDES GERADOS -->
+  <div class="presentation-container" id="presentationContainer"></div>
+
+  <script>
+    // =========================================================================
+    // 1. SEPARAÇÃO RIGOROSA: LISTA OFICIAL DE CDs vs LISTA DAS 298 LOJAS
+    // =========================================================================
+    const OFFICIAL_CDS = {
+      "1088": "CD 1088 – RIBEIRÃO PRETO SP",
+      "1200": "CD 1200 – JUNDIAÍ SP",
+      "1400": "CD 1400 – CAMAÇARI BA",
+      "1401": "CD 1401 – DUQUE DE CAXIAS RJ",
+      "1445": "CD 1445 – ESTEIO RS",
+      "1475": "CD 1475 – PINHAIS PR",
+      "1500": "CD 1500 – CONTAGEM MG",
+      "1600": "CD 1600 – CAMPO GRANDE MS",
+      "1624": "CD 1624 – ITAJAÍ SC",
+      "1635": "CD 1635 – VÁRZEA GRANDE MT",
+      "1640": "CD 1640 – SERRA ES",
+      "1673": "CD 1673 – ITABAIANA SE",
+      "1736": "CD 1736 – PARNAMIRIM RN",
+      "1760": "CD 1760 – BETIM MG",
+      "1792": "CD 1792 – CD",
+      "1875": "CD 1875 – SÃO LUÍS MA",
+      "1877": "CD 1877 – MARACANAÚ CE",
+      "1887": "CD 1887 – CONDE PB",
+      "1895": "CD 1895 – HIDROLÂNDIA GO",
+      "2241": "CD 2241 – ANANINDEUA PA",
+      "2600": "CD 2600 – MANAUS AM"
+    };
+
+    // Mapa conferido com as abas Transp e Custo Frete da planilha Lista final_298 lojas 1.xlsx (298 IDs unicos).
+    const LOJAS_298_DB = {};
+
+    const LOJAS_298_FALLBACK = JSON.parse(JSON.stringify(LOJAS_298_DB));
+
+    const rawFiles109 = {};
+    const rawFiles909 = {};
+    let storeWorkbookLoaded = false;
+    let dataLoadComplete = false;
+    let dataLoadValidationError = '';
+    const cdDatabase = {};
+
+    function fmtBR(num) {
+      return Math.round(Number(num || 0)).toLocaleString('pt-BR');
+    }
+
+    function resolveToCDCode(codeStr) {
+      if (!codeStr) return null;
+      const cleanNoZero = String(parseInt(codeStr, 10));
+      const padded4 = cleanNoZero.padStart(4, '0');
+
+      if (OFFICIAL_CDS[padded4]) return padded4;
+      if (LOJAS_298_DB[cleanNoZero]) {
+        const storeSource = document.getElementById('storeCountSource') ? document.getElementById('storeCountSource').value : 'transp';
+        return storeSource === 'custo' ? LOJAS_298_DB[cleanNoZero][1] : LOJAS_298_DB[cleanNoZero][0];
+      }
+      return padded4;
+    }
+
+    function getStoresCountByCD(mode) {
+      const counts = {};
+      Object.keys(OFFICIAL_CDS).forEach(cd => {
+        counts[cd] = { lojas: 0, rua: 0, shopping: 0 };
+      });
+
+      Object.keys(LOJAS_298_DB).forEach(idLoja => {
+        const [cdTransp, cdCusto, isShop] = LOJAS_298_DB[idLoja];
+        const cdTarget = mode === 'custo' ? cdCusto : cdTransp;
+        if (!counts[cdTarget]) counts[cdTarget] = { lojas: 0, rua: 0, shopping: 0 };
+        counts[cdTarget].lojas += 1;
+        if (isShop) counts[cdTarget].shopping += 1;
+        else counts[cdTarget].rua += 1;
+      });
+      return counts;
+    }
+
+    function extractCodeFromFilenameOrRows(filename, rows) {
+      if (rows && rows.length > 0) {
+        for (const r of rows) {
+          const k = Object.keys(r).find(key => normalizeHeader(key) === 'filial');
+          if (k && r[k]) {
+            const resolved = resolveToCDCode(String(r[k]).trim());
+            if (resolved) return resolved;
+          }
+        }
+      }
+
+      const cleanName = filename.replace(/^.*[\\/]/, '');
+      const matches = [...cleanName.matchAll(/(^|[^0-9])(\d{3,5})(?=$|[^0-9])/g)];
+      for (const match of matches) {
+        const resolved = resolveToCDCode(match[2]);
+        if (resolved && OFFICIAL_CDS[resolved]) return resolved;
+      }
+      return null;
+    }
+
+    function parseDelimitedText(arrayBuffer, delimiter = '\t') {
+      const bytes = new Uint8Array(arrayBuffer);
+      let encoding = 'utf-8';
+      if (bytes[0] === 0xFF && bytes[1] === 0xFE) encoding = 'utf-16le';
+      else if (bytes[0] === 0xFE && bytes[1] === 0xFF) encoding = 'utf-16be';
+      else if (bytes[1] === 0 || bytes[3] === 0) encoding = 'utf-16le';
+      const text = new TextDecoder(encoding).decode(bytes).replace(/^\uFEFF/, '');
+      const table = [];
+      let row = [], cell = '', inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (inQuotes) {
+          if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+          else if (ch === '"') inQuotes = false;
+          else cell += ch;
+        } else if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === delimiter) {
+          row.push(cell); cell = '';
+        } else if (ch === '\n' || ch === '\r') {
+          if (ch === '\r' && text[i + 1] === '\n') i++;
+          row.push(cell);
+          if (row.some(value => value !== '')) table.push(row);
+          row = []; cell = '';
+        } else {
+          cell += ch;
+        }
+      }
+      if (cell !== '' || row.length > 0) {
+        row.push(cell);
+        if (row.some(value => value !== '')) table.push(row);
+      }
+
+      if (table.length === 0) return [];
+      const headers = table.shift().map(value => String(value || '').trim());
+      return table.map(values => {
+        const record = {};
+        headers.forEach((header, index) => { if (header) record[header] = values[index] ?? ''; });
+        return record;
+      });
+    }
+
+    function normalizeHeader(value) {
+      return String(value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function isStoreListWorkbook(relativePath) {
+      const fileName = String(relativePath || '').replace(/\\/g, '/').split('/').pop() || '';
+      const normalized = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+      return /^lista final 298 lojas 1(?: \(\d+\))?\.xlsx$/i.test(normalized);
+    }
+
+    function isBackupPath(relativePath) {
+      return String(relativePath || '').replace(/\\/g, '/').split('/').some(part => /^backup|^bakup/i.test(part.trim()));
+    }
+
+    function getReportTypeFromFolderName(name) {
+      const clean = String(name || '').trim().toLowerCase();
+      const has109 = /(^|[^0-9])1\.09($|[^0-9])/i.test(clean);
+      const has909 = /(^|[^0-9])9\.09($|[^0-9])/i.test(clean);
+      if (has109 === has909) return null;
+      return has109 ? '1.09' : '9.09';
+    }
+
+    function applyStoreWorkbookData(data) {
+      if (!data || data.transpCount !== 298 || data.custoCount !== 298 || data.idCount !== 298 || Object.keys(data.shops || {}).length !== 298) {
+        throw new Error('A planilha precisa conter 298 lojas com IDs iguais nas abas Transp e Custo Frete.');
+      }
+      Object.keys(LOJAS_298_DB).forEach(id => delete LOJAS_298_DB[id]);
+      Object.entries(data.shops).forEach(([id, row]) => {
+        LOJAS_298_DB[id] = [String(row.transp || ''), String(row.custo || ''), row.isShop ? 1 : 0];
+      });
+      storeWorkbookLoaded = true;
+      return { transpCount: data.transpCount, custoCount: data.custoCount, idCount: data.idCount };
+    }
+
+    function detectReportType(relativePath, rows) {
+      const parts = String(relativePath || '').replace(/\\/g, '/').split('/').map(part => part.toLowerCase());
+      if (isBackupPath(relativePath)) return null;
+      for (const part of parts.slice(0, -1).reverse()) {
+        const folderType = getReportTypeFromFolderName(part);
+        if (folderType) return folderType;
+      }
+      const name = parts[parts.length - 1] || '';
+      const fileType = getReportTypeFromFolderName(name);
+      if (fileType) return fileType;
+
+      if (!rows || rows.length === 0) return null;
+      const headers = Object.keys(rows[0]).map(normalizeHeader);
+      const hasQty = headers.some(k => ['qtde. pecas', 'qtde pecas', 'quantidade', 'qtd', 'estoque', 'on hand'].includes(k));
+      if (headers.includes('reason code') && (headers.includes('reason code description') || headers.includes('quantidade ajustada'))) return '9.09';
+      if (hasQty && (headers.includes('local atual') || headers.includes('item') || headers.includes('status'))) return '1.09';
+      return null;
+    }
+
+    async function processRootFileEntries(entries, forcedType = null, storeData = null) {
+      if (forcedType === '1.09') Object.keys(rawFiles109).forEach(k => delete rawFiles109[k]);
+      else if (forcedType === '9.09') Object.keys(rawFiles909).forEach(k => delete rawFiles909[k]);
+      else {
+        Object.keys(rawFiles109).forEach(k => delete rawFiles109[k]);
+        Object.keys(rawFiles909).forEach(k => delete rawFiles909[k]);
+        Object.keys(LOJAS_298_DB).forEach(id => delete LOJAS_298_DB[id]);
+        Object.entries(LOJAS_298_FALLBACK).forEach(([id, row]) => { LOJAS_298_DB[id] = [...row]; });
+        storeWorkbookLoaded = false;
+        if (storeData) applyStoreWorkbookData(storeData);
+      }
+
+      const statusRoot = document.getElementById('statusRoot');
+      statusRoot.textContent = `Verificando ${entries.length} arquivos...`;
+      let c109 = 0, c909 = 0, skipped = 0, failed = 0, storeFileFound = Boolean(storeData), storeFileError = '';
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const file = entry.file;
+        const relativePath = entry.relativePath || file.name;
+        let rows = null;
+        try {
+          statusRoot.textContent = `Lendo arquivo ${i + 1} de ${entries.length}: ${file.name}`;
+          if (isBackupPath(relativePath)) { skipped++; continue; }
+          const buffer = await file.arrayBuffer();
+          if (isStoreListWorkbook(relativePath)) {
+            storeFileFound = true;
+            skipped++;
+            continue;
+          }
+          rows = parseDelimitedText(buffer, '\t');
+          const detectedType = detectReportType(entry.relativePath || file.name, rows);
+          const reportType = detectedType || forcedType;
+          if (!rows || rows.length === 0) {
+            const emptyFileCode = file.name.match(/(^|[^0-9])(\d{3,5})(?=$|[^0-9])/);
+            const emptyCD = emptyFileCode ? String(parseInt(emptyFileCode[2], 10)).padStart(4, '0') : null;
+            if (reportType === '9.09' && emptyCD && rawFiles109[emptyCD]) {
+              rawFiles909[emptyCD] = merge909Summaries(rawFiles909[emptyCD], { sumPecasByRC: {}, negativeAdjustByRC: {} });
+              c909++;
+            } else {
+              skipped++;
+            }
+            continue;
+          }
+          if (!reportType || (forcedType && detectedType && detectedType !== forcedType)) { skipped++; continue; }
+          const cdCode = extractCodeFromFilenameOrRows(file.name, rows);
+          if (!cdCode) { skipped++; continue; }
+
+          if (reportType === '1.09') {
+            const summary = analyze109ForCD(rows);
+            rawFiles109[cdCode] = merge109Summaries(rawFiles109[cdCode], summary);
+            c109++;
+          } else {
+            const summary = summarize909ForCD(rows);
+            rawFiles909[cdCode] = merge909Summaries(rawFiles909[cdCode], summary);
+            c909++;
+          }
+          rows = null;
+        } catch (err) {
+          failed++;
+          if (isStoreListWorkbook(relativePath)) storeFileError = err.message || String(err);
+          console.error(`Falha ao ler ${file.name}:`, err);
+        }
+      }
+
+      const expectedCDs = new Set([...Object.keys(OFFICIAL_CDS), ...Object.keys(rawFiles109), ...Object.keys(rawFiles909)]);
+      const missing109 = [...expectedCDs].filter(cd => !rawFiles109[cd]);
+      const missing909 = [...expectedCDs].filter(cd => !rawFiles909[cd]);
+      const issues = [];
+      if (!storeWorkbookLoaded) issues.push(storeFileFound ? `planilha de lojas falhou (${storeFileError || 'erro de leitura'})` : 'planilha de lojas nao encontrada');
+      if (missing109.length) issues.push(`sem base 1.09 para ${missing109.join(', ')}`);
+      if (missing909.length) issues.push(`sem base 9.09 para ${missing909.join(', ')}`);
+      if (failed) issues.push(`${failed} arquivo(s) falharam na leitura`);
+      if (!c109 || !c909) issues.push('uma das bases nao produziu dados');
+      dataLoadComplete = issues.length === 0;
+      dataLoadValidationError = issues.join('; ');
+      const workbookStatus = storeWorkbookLoaded
+        ? `Planilha carregada: ${Object.keys(LOJAS_298_DB).length} lojas nas abas Transp e Custo Frete.`
+        : 'Planilha de lojas nao validada.';
+      statusRoot.textContent = `${c109 + c909} arquivos reconhecidos (${Object.keys(rawFiles109).length} CDs com 1.09; ${Object.keys(rawFiles909).length} CDs com 9.09); ${skipped} ignorados, ${failed} falharam.`;
+      const sourceStatus = document.getElementById('sourceStatus');
+      sourceStatus.textContent = dataLoadComplete
+        ? `Dados atualizados e validados. ${Object.keys(OFFICIAL_CDS).length} CDs oficiais presentes nas duas bases. ${workbookStatus}`
+        : `Dados carregados com pendencias: ${dataLoadValidationError}. PDF bloqueado ate completar as fontes.`;
+      if (dataLoadComplete) {
+        recalculateAllCDs();
+      } else {
+        document.getElementById('presentationContainer').innerHTML = '';
+        document.getElementById('branchList').innerHTML = '';
+        updatePdfExportState();
+      }
+    }
+
+    async function refreshDataFromLocalRoot() {
+      const button = document.getElementById('refreshDataButton');
+      const status = document.getElementById('statusRoot');
+      const sourceStatus = document.getElementById('sourceStatus');
+      button.disabled = true;
+      status.textContent = 'Localizando as bases 1.09, 9.09 e a planilha de lojas...';
+      sourceStatus.textContent = 'Lendo as bases locais. Os slides serao atualizados ao final da leitura.';
+      dataLoadComplete = false;
+      dataLoadValidationError = 'A leitura das bases ainda nao foi concluida.';
+      updatePdfExportState();
+
+      try {
+        const response = await fetch('/api/files', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Servidor local respondeu ${response.status}.`);
+        const fileList = await response.json();
+        const files109 = fileList.filter(item => /^1\.09\//i.test(item.relativePath) && /\.csv$/i.test(item.name));
+        const files909 = fileList.filter(item => /^9\.09\//i.test(item.relativePath) && /\.csv$/i.test(item.name));
+        const storeWorkbook = fileList.find(item => isStoreListWorkbook(item.relativePath));
+        if (!files109.length || !files909.length || !storeWorkbook) {
+          const missing = [];
+          if (!files109.length) missing.push('arquivos CSV na pasta 1.09');
+          if (!files909.length) missing.push('arquivos CSV na pasta 9.09');
+          if (!storeWorkbook) missing.push('Lista final_298 lojas 1.xlsx na pasta principal');
+          throw new Error(`Nao encontrei: ${missing.join(', ')}.`);
+        }
+
+        const workbookResponse = await fetch('/api/store-list', { cache: 'no-store' });
+        if (!workbookResponse.ok) throw new Error(`Falha ao validar a planilha de lojas (HTTP ${workbookResponse.status}).`);
+        const storeData = await workbookResponse.json();
+        const entries = fileList.filter(item => !isStoreListWorkbook(item.relativePath)).map(item => ({
+          relativePath: item.relativePath,
+          file: {
+            name: item.name,
+            async arrayBuffer() {
+              const fileResponse = await fetch(`/api/file?path=${encodeURIComponent(item.relativePath)}`, { cache: 'no-store' });
+              if (!fileResponse.ok) throw new Error(`Falha ao ler ${item.relativePath} (HTTP ${fileResponse.status}).`);
+              return fileResponse.arrayBuffer();
+            }
+          }
+        }));
+        await processRootFileEntries(entries, null, storeData);
+      } catch (err) {
+        dataLoadComplete = false;
+        dataLoadValidationError = err.message || String(err);
+        status.textContent = `Falha ao atualizar: ${dataLoadValidationError}`;
+        sourceStatus.textContent = 'Nao foi possivel validar as fontes. Confira se o relatorio foi aberto pelo arquivo Iniciar Relatorio.cmd.';
+        updatePdfExportState();
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function analyze109ForCD(rows) {
+      if (!rows || rows.length === 0) return null;
+      let initBoa = 0, initQeb = 0, initSld = 0, volumeQeb = 0, volumeTotal = 0;
+
+      rows.forEach(r => {
+        let qtde = 0, rc = '', tipoAsn = '', vol = 0;
+        for (const key of Object.keys(r)) {
+          const k = key.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          const val = String(r[key] ?? '').trim();
+
+          if (k === 'qtde. pecas' || k === 'qtde pecas' || k === 'quantidade' || k === 'qtd' || k === 'estoque' || k === 'on hand') {
+            qtde = parseFloat(val.replace(/\./g, '').replace(',', '.')) || Number(r[key]) || 0;
+          } else if (k === 'reason code') {
+            rc = val.toUpperCase();
+          } else if (k === 'tipo asn') {
+            tipoAsn = val.toUpperCase();
+          } else if (k.includes('cubagem') || k.includes('volume') || k === 'm3' || k === 'mts') {
+            vol = parseFloat(val.replace(/\./g, '').replace(',', '.')) || Number(r[key]) || 0;
+          }
+        }
+
+        const itemQty = qtde > 0 ? qtde : (rc === 'VF' || rc === 'S1' || rc === '69' ? 0 : 1);
+        if (tipoAsn.includes('QEB') || tipoAsn.includes('QUEB')) {
+          initQeb += itemQty;
+          volumeQeb += vol;
+        } else if (tipoAsn.includes('SLD') || tipoAsn.includes('SALDO')) {
+          initSld += itemQty;
+        } else if (itemQty > 0) {
+          initBoa += itemQty;
+        }
+        volumeTotal += vol;
+      });
+
+      return { initBoa, initQeb, initSld, volumeQeb, volumeTotal };
+    }
+
+    function summarize909ForCD(rows) {
+      const summary = { sumPecasByRC: {}, negativeAdjustByRC: {} };
+      if (!rows || rows.length === 0) return summary;
+
+      rows.forEach(r => {
+        let rc = '', rcDesc = '', qtdePecas = 0, qtdeAjust = 0;
+        for (const key of Object.keys(r)) {
+          const k = key.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          const val = String(r[key] ?? '').trim();
+          if (k === 'reason code') rc = val.toUpperCase();
+          else if (k === 'reason code description') rcDesc = val.toUpperCase();
+          else if (k === 'qtde. pecas' || k === 'qtde pecas') {
+            qtdePecas = Number(r[key]) || parseFloat(val.replace(',', '.')) || 0;
+          } else if (k === 'quantidade ajustada') {
+            qtdeAjust = Number(r[key]) || parseFloat(val.replace(',', '.')) || 0;
+          }
+        }
+
+        if (!rc && rcDesc) {
+          const descCode = rcDesc.match(/^\s*([A-Z0-9]{1,4})\s*-/);
+          if (descCode) rc = descCode[1];
+        }
+        if (rcDesc.includes('R07') || rc === '07' || rc === '7') rc = 'R07';
+        if (rcDesc.includes('R08') || rc === '08' || rc === '8') rc = 'R08';
+        if (!rc) return;
+
+        summary.sumPecasByRC[rc] = (summary.sumPecasByRC[rc] || 0) + qtdePecas;
+        if (qtdeAjust < 0) summary.negativeAdjustByRC[rc] = (summary.negativeAdjustByRC[rc] || 0) + Math.abs(qtdeAjust);
+      });
+      return summary;
+    }
+
+    function merge109Summaries(a, b) {
+      if (!a) return b;
+      return {
+        initBoa: a.initBoa + b.initBoa,
+        initQeb: a.initQeb + b.initQeb,
+        initSld: a.initSld + b.initSld,
+        volumeQeb: a.volumeQeb + b.volumeQeb,
+        volumeTotal: a.volumeTotal + b.volumeTotal
+      };
+    }
+
+    function merge909Summaries(a, b) {
+      if (!a) return b;
+      const sumPecasByRC = { ...a.sumPecasByRC };
+      Object.entries(b.sumPecasByRC).forEach(([rc, qty]) => {
+        sumPecasByRC[rc] = (sumPecasByRC[rc] || 0) + qty;
+      });
+      const negativeAdjustByRC = { ...a.negativeAdjustByRC };
+      Object.entries(b.negativeAdjustByRC).forEach(([rc, qty]) => {
+        negativeAdjustByRC[rc] = (negativeAdjustByRC[rc] || 0) + qty;
+      });
+      return { sumPecasByRC, negativeAdjustByRC };
+    }
+
+    function analyze909ForCD(summary, codesBoaToQeb, codesQebToBoa, codesQebToSld, codesAvReturn) {
+      if (!summary) return null;
+      const sumPecasByRC = summary.sumPecasByRC || {};
+      let boaToQeb = 0;
+      codesBoaToQeb.forEach(c => { boaToQeb += (sumPecasByRC[c] || 0); });
+
+      let qebToBoa = 0;
+      codesQebToBoa.forEach(c => { qebToBoa += (sumPecasByRC[c] || 0); });
+
+      let qebToSld = 0;
+      codesQebToSld.forEach(c => { qebToSld += (sumPecasByRC[c] || 0); });
+      if (qebToSld > 0 && codesQebToSld.some(c => (summary.negativeAdjustByRC?.[c] || 0) > 0)) qebToSld -= 1;
+
+      let avReturn = 0;
+      codesAvReturn.forEach(c => { avReturn += (sumPecasByRC[c] || 0); });
+
+      return { boaToQeb, qebToBoa, qebToSld, avReturn };
+    }
+
+    const SETTINGS_STORAGE_KEY = 'desmobilizacao-configuracoes-v1';
+
+    function markSettingsUnsaved() {
+      const status = document.getElementById('saveConfigStatus');
+      if (status) status.textContent = 'Alteracoes pendentes. Clique em Salvar configuracoes.';
+    }
+
+    function saveCurrentSettings() {
+      const settings = {
+        version: 2,
+        storeCountSource: document.getElementById('storeCountSource').value,
+        codesBoaToQeb: document.getElementById('codesBoaToQeb').value,
+        codesQebToBoa: document.getElementById('codesQebToBoa').value,
+        codesQebToSld: document.getElementById('codesQebToSld').value,
+        codesAvReturn: document.getElementById('codesAvReturn').value
+      };
+      const status = document.getElementById('saveConfigStatus');
+      try {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+        status.textContent = 'Configuracoes salvas neste navegador.';
+      } catch (err) {
+        status.textContent = 'Nao foi possivel salvar neste navegador.';
+      }
+    }
+
+    function loadSavedSettings() {
+      const status = document.getElementById('saveConfigStatus');
+      try {
+        const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+        if (!raw) return;
+        const settings = JSON.parse(raw);
+        if (settings.storeCountSource === 'transp' || settings.storeCountSource === 'custo') {
+          document.getElementById('storeCountSource').value = settings.storeCountSource;
+        }
+        const oldDefaults = { codesBoaToQeb: 'R07,07,7,AV,71,VR,44,22,AR', codesQebToBoa: 'R08,08,8,80,82', codesQebToSld: 'T1,SLD' };
+        Object.entries(oldDefaults).forEach(([id, oldValue]) => { if (settings[id] === oldValue) settings[id] = document.getElementById(id).value; });
+        ['codesBoaToQeb', 'codesQebToBoa', 'codesQebToSld', 'codesAvReturn'].forEach(id => { if (typeof settings[id] === 'string') document.getElementById(id).value = settings[id]; });
+        status.textContent = 'Configuracoes salvas restauradas deste navegador.';
+      } catch (err) {
+        status.textContent = 'Nao foi possivel ler as configuracoes salvas.';
+      }
+    }
+
+    function updatePdfExportState() {
+      const loaded109 = Object.keys(rawFiles109).length;
+      const loaded909 = Object.keys(rawFiles909).length;
+      const button = document.getElementById('exportPdfButton');
+      const status = document.getElementById('pdfExportStatus');
+      if (!button || !status) return;
+      button.disabled = !dataLoadComplete || loaded109 === 0 || loaded909 === 0;
+      status.textContent = button.disabled
+        ? `PDF bloqueado: ${dataLoadValidationError || 'atualize e valide as bases.'} (1.09: ${loaded109} CDs; 9.09: ${loaded909} CDs)`
+        : `Bases validadas: 1.09 (${loaded109} CDs), 9.09 (${loaded909} CDs) e planilha de 298 lojas. PDF pronto.`;
+    }
+
+    function exportPdf() {
+      if (!dataLoadComplete || Object.keys(rawFiles109).length === 0 || Object.keys(rawFiles909).length === 0) {
+        updatePdfExportState();
+        document.getElementById('sourceStatus').textContent = `PDF nao gerado: ${dataLoadValidationError || 'atualize e valide as bases.'}`;
+        return;
+      }
+      recalculateAllCDs();
+      const status = document.getElementById('pdfExportStatus');
+      status.textContent = 'Apresentacao atualizada. Abrindo a exportacao PDF...';
+      requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+    }
+
+    function recalculateAllCDs() {
+      const storeSource = document.getElementById('storeCountSource').value;
+      const codesBoaToQeb = document.getElementById('codesBoaToQeb').value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+      const codesQebToBoa = document.getElementById('codesQebToBoa').value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+      const codesQebToSld = document.getElementById('codesQebToSld').value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+      const codesAvReturn = document.getElementById('codesAvReturn').value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+
+      const storesByCD = getStoresCountByCD(storeSource);
+
+      const allCDs = new Set([
+        ...Object.keys(OFFICIAL_CDS),
+        ...Object.keys(rawFiles109),
+        ...Object.keys(rawFiles909)
+      ]);
+
+      allCDs.forEach(cd => {
+        const stInfo = storesByCD[cd] || { lojas: 0, rua: 0, shopping: 0 };
+        if (stInfo.lojas === 0 && !rawFiles109[cd] && !rawFiles909[cd] && cd !== "1600") {
+          delete cdDatabase[cd];
+          return;
+        }
+
+        const is1600 = (cd === "1600");
+        cdDatabase[cd] = {
+          cd: cd,
+          cdTitle: OFFICIAL_CDS[cd] || `CD ${cd}`,
+          initBoa: 0,
+          initQeb: 0,
+          initSld: 0,
+          boaToQeb: 0,
+          qebToBoa: 0,
+          qebToSld: 0,
+          avReturn: 0,
+          numLojas: stInfo.lojas,
+          lojasRua: stInfo.rua,
+          lojasShopping: stInfo.shopping,
+          volumeRetorno: 0,
+          volumeMobiliario: 0,
+          volumeQeb: 0
+        };
+
+        const entry = cdDatabase[cd];
+
+        if (rawFiles109[cd]) {
+          const r109 = rawFiles109[cd];
+          if (r109) {
+            entry.initBoa = r109.initBoa;
+            entry.initQeb = r109.initQeb;
+            entry.initSld = r109.initSld;
+            entry.volumeQeb = r109.volumeQeb;
+          }
+        }
+
+        const rowsTrans = rawFiles909[cd];
+        if (rowsTrans) {
+          const r909 = analyze909ForCD(rowsTrans, codesBoaToQeb, codesQebToBoa, codesQebToSld, codesAvReturn);
+          if (r909) {
+            entry.boaToQeb = r909.boaToQeb;
+            entry.qebToBoa = r909.qebToBoa;
+            entry.qebToSld = r909.qebToSld;
+            entry.avReturn = r909.avReturn;
+          }
+        }
+      });
+
+      renderAllSlides();
+      updatePdfExportState();
+    }
+
+    function renderAllSlides() {
+      const container = document.getElementById('presentationContainer');
+      const branchListEl = document.getElementById('branchList');
+      container.innerHTML = '';
+      branchListEl.innerHTML = '';
+
+      const cdKeys = Object.keys(cdDatabase).sort((a, b) => {
+        if (a === "1600") return -1;
+        if (b === "1600") return 1;
+        return a.localeCompare(b);
+      });
+
+      let totalStoresMapped = 0;
+      cdKeys.forEach(k => { totalStoresMapped += cdDatabase[k].numLojas; });
+      document.getElementById('totalLoadedBadge').textContent = `${cdKeys.length} CDs Ativos | ${totalStoresMapped} Lojas Desmobilizadas`;
+
+      // 1. SLIDE DE CAPA
+      const coverHtml = `
+        <div class="slide">
+          <div class="top-banner-wrapper">
+            <div class="top-red-stripe"></div>
+            <div class="top-blue-banner">
+              <div class="banner-title" contenteditable="true">Análise de Desmobilização Lojas</div>
+              <div class="banner-right">
+                <div class="banner-brand">Casas Bahia</div>
+              </div>
+            </div>
+          </div>
+          <div class="cover-body">
+            <div class="cover-tag" contenteditable="true">PLANEJAMENTO LOGÍSTICO • BASE DAT / QEB</div>
+            <div class="cover-main-title" contenteditable="true">CONSOLIDAÇÃO NACIONAL DE DESMOBILIZAÇÃO</div>
+          </div>
+          <div class="slide-footer-area">
+            <div class="footer-red-line"></div>
+            <div class="footer-row">
+              <div class="footer-left-text">PLANEJAMENTO LOGÍSTICO • BASE DAT / QEB</div>
+              <div class="footer-center-text">Documento Público</div>
+              <div class="footer-right-page">1</div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', coverHtml);
+
+      // 2. PÁGINA DE METODOLOGIA
+      const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[char]);
+      const codesBoaDisplay = escapeHtml(document.getElementById('codesBoaToQeb').value);
+      const codesQebBoaDisplay = escapeHtml(document.getElementById('codesQebToBoa').value);
+      const codesQebSldDisplay = escapeHtml(document.getElementById('codesQebToSld').value);
+      const storeSourceDisplay = document.getElementById('storeCountSource').value === 'custo' ? 'Custo Frete' : 'Transp';
+      const methodologyHtml = `
+        <div class="slide">
+          <div class="top-banner-wrapper">
+            <div class="top-red-stripe"></div>
+            <div class="top-blue-banner">
+              <div class="banner-title">Metodologia dos cálculos</div>
+              <div class="banner-right">
+                <div class="banner-cd-badge">Bases 1.09 e 9.09</div>
+                <div class="banner-brand">Casas Bahia</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-body methodology-body">
+            <div class="slide-lead">Critérios aplicados às filiais e reconciliação dos totais</div>
+
+            <div class="methodology-grid">
+              <section class="methodology-card">
+                <h3>1. Estoque inicial | 1.09</h3>
+                <p>Em todas as filiais, a classifica&ccedil;&atilde;o vem do texto de <strong>Tipo ASN</strong>: descri&ccedil;&otilde;es com QEB/QUEB entram em QEB; descri&ccedil;&otilde;es com SLD/Saldo entram em SLD; os demais tipos entram em BOA.</p>
+                <p>Se a quantidade estiver vazia, zerada ou negativa, conta 1 unidade, exceto para os motivos VF, S1 e 69. A regra e aplicada igualmente a todas as filiais, inclusive o CD 1600, com os dados da base 1.09.</p>
+              </section>
+
+              <section class="methodology-card">
+                <h3>2. Movimentações | 9.09</h3>
+                <p>A rotina agrupa por filial e Reason Code e soma somente <strong>Qtde. Peças</strong>. <strong>Quantidade Ajustada</strong> não é somada como peças extras; serve para identificar ajuste negativo na regra de saldo.</p>
+                <ul>
+                  <li><strong>BOA → QEB:</strong> ${codesBoaDisplay}</li>
+                  <li><strong>QEB &rarr; BOA:</strong> ${codesQebBoaDisplay}</li>
+                  <li><strong>QEB &rarr; SLD:</strong> ${codesQebSldDisplay}; havendo ajuste negativo na 9.09, deduz 1 unidade</li>
+                  <li><strong>AV:</strong> ${escapeHtml(document.getElementById('codesAvReturn').value)} (retorno de mercadoria sem d&eacute;bito), mostrado em separado e somado ao total final</li>
+                </ul>
+              </section>
+
+              <section class="methodology-card">
+                <h3>3. Fechamento do estoque</h3>
+                <div class="methodology-equation">BOA final = max(0, BOA inicial - BOA para QEB + QEB para BOA)</div>
+                <div class="methodology-equation">QEB final = max(0, QEB inicial + BOA&rarr;QEB - QEB&rarr;BOA - QEB&rarr;SLD)</div>
+                <p>SLD final = SLD inicial + QEB&rarr;SLD. AV (retorno sem d&eacute;bito) aparece separado e soma ao total final. Os saldos BOA e QEB nunca ficam negativos: quando as saidas excedem o saldo disponivel, o respectivo saldo final fica em zero. As movimentacoes seguem os valores registrados na base e, nesses casos, o total final pode divergir do inicial.</p>
+              </section>
+
+              <section class="methodology-card">
+                <h3>4. Lojas e indicadores logísticos</h3>
+                <p>Os volumes de retorno e mobiliario nao sao definidos pelas bases 1.09 e 9.09 e ficam sem calculo. A cubagem QEB e lida da base 1.09 para todas as filiais.</p>
+                <p>Os volumes de retorno e mobiliario nao sao definidos por esta base; ficam sem valor calculado. A cubagem QEB e lida da base 1.09 para todas as filiais.</p>
+              </section>
+            </div>
+
+            <div class="methodology-note">O estoque inicial de todas as filiais, incluindo a CD 1600, e calculado diretamente da base 1.09. As movimentacoes de todas as filiais sao lidas da base 9.09 pelos codigos configurados.</div>
+          </div>
+
+          <div class="slide-footer-area">
+            <div class="footer-red-line"></div>
+            <div class="footer-row">
+              <div class="footer-left-text">PLANEJAMENTO LOGÍSTICO • BASE DAT / QEB</div>
+              <div class="footer-center-text">Metodologia</div>
+              <div class="footer-right-page">2</div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', methodologyHtml);
+
+      // 3. SLIDE DE CONFERÊNCIA PARA CADA CD
+      let pageNum = 3;
+      cdKeys.forEach(cd => {
+        const d = cdDatabase[cd];
+
+        const tag = document.createElement('span');
+        tag.className = 'branch-tag';
+        tag.textContent = `CD ${d.cd}: ${d.numLojas} lojas`;
+        branchListEl.appendChild(tag);
+
+        const totalInicial = d.initBoa + d.initQeb + d.initSld;
+        const subtotalQeb = d.initQeb + d.boaToQeb - d.qebToBoa;
+        const finalBoa = Math.max(0, d.initBoa - d.boaToQeb + d.qebToBoa);
+        const finalQeb = Math.max(0, subtotalQeb - d.qebToSld);
+        const finalSld = d.initSld + d.qebToSld;
+        const totalFinal = finalBoa + finalQeb + finalSld + d.avReturn;
+        const totalMts = d.volumeRetorno + d.volumeMobiliario;
+
+        const slideHtml = `
+          <div class="slide">
+            <div class="top-banner-wrapper">
+              <div class="top-red-stripe"></div>
+              <div class="top-blue-banner">
+                <div class="banner-title" contenteditable="true">Premissas e critérios</div>
+                <div class="banner-right">
+                  <div class="banner-cd-badge" contenteditable="true">${d.cdTitle}</div>
+                  <div class="banner-brand">Casas Bahia</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="slide-body">
+              <div class="slide-lead" contenteditable="true">Critérios utilizados para os indicadores desta apresentação</div>
+
+              <div class="items-vertical-list">
+                <div class="premise-row">
+                  <div class="red-num-box">01</div>
+                  <div class="premise-text-group">
+                    <div class="premise-heading" contenteditable="true">Status inicial</div>
+                    <div class="premise-desc" contenteditable="true">${fmtBR(d.initBoa)} itens em BOA, ${fmtBR(d.initQeb)} em QEB e ${fmtBR(d.initSld)} em SLD; total de ${fmtBR(totalInicial)} itens.</div>
+                  </div>
+                </div>
+
+                <div class="premise-row">
+                  <div class="red-num-box">02</div>
+                  <div class="premise-text-group">
+                    <div class="premise-heading" contenteditable="true">BOA → QEB</div>
+                    <div class="premise-desc" contenteditable="true">Dos ${fmtBR(d.initBoa)} itens inicialmente em BOA, ${fmtBR(d.boaToQeb)} mudaram para QEB.</div>
+                  </div>
+                </div>
+
+                <div class="premise-row">
+                  <div class="red-num-box">03</div>
+                  <div class="premise-text-group">
+                    <div class="premise-heading" contenteditable="true">QEB → BOA</div>
+                    <div class="premise-desc" contenteditable="true">Dos ${fmtBR(d.initQeb)} itens inicialmente em QEB, ${fmtBR(d.qebToBoa)} mudaram para BOA.</div>
+                  </div>
+                </div>
+
+                <div class="premise-row">
+                  <div class="red-num-box">04</div>
+                  <div class="premise-text-group">
+                    <div class="premise-heading" contenteditable="true">QEB para Saldo</div>
+                    <div class="premise-desc" contenteditable="true">Do subtotal de ${fmtBR(subtotalQeb)} itens em QEB, ${fmtBR(d.qebToSld)} foram transferidos para SLD; o saldo final SLD inclui ${fmtBR(d.initSld)} itens iniciais.</div>
+                  </div>
+                </div>
+
+                <div class="premise-row">
+                  <div class="red-num-box">05</div>
+                  <div class="premise-text-group">
+                    <div class="premise-heading" contenteditable="true">Status final</div>
+                    <div class="premise-desc" contenteditable="true">${fmtBR(finalBoa)} itens em BOA; ${fmtBR(finalQeb)} itens em QEB e ${fmtBR(finalSld)} em SLD e ${fmtBR(d.avReturn)} em retorno AV; total calculado: ${fmtBR(totalFinal)} itens.</div>
+                  </div>
+                </div>
+
+                <div class="premise-row">
+                  <div class="red-num-box">06</div>
+                  <div class="premise-text-group">
+                    <div class="premise-heading" contenteditable="true">Resumo da operação</div>
+                    <div class="premise-desc" contenteditable="true">${fmtBR(d.numLojas)} lojas desmobilizadas • ${fmtBR(totalMts)} mts totais (${fmtBR(d.volumeRetorno)} retorno + ${fmtBR(d.volumeMobiliario)} mobiliários/TI/outros) • Cubagem QEB: ${fmtBR(d.volumeQeb)} mts.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="slide-footer-area">
+              <div class="footer-red-line"></div>
+  <div class="footer-center-text">Documento P&uacute;blico${d.cd === '1600' ? '<span class="footer-credit">&middot; Desenvolvedor: Lucas Ramalho &middot; Supervisora: Fania Alves</span>' : ''}</div>
+                <div class="footer-right-page">${pageNum++}</div>B</div>
+                <div class="footer-center-text">Documento Público</div>
+                <div class="footer-right-page">${pageNum++}</div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', slideHtml);
+      });
+
+      // 3. SLIDE FINAL DE RESUMO GERAL CONSOLIDADO
+      let sInitBoa = 0, sInitQeb = 0, sInitSld = 0, sBoaQeb = 0, sQebBoa = 0, sQebSld = 0, sAvReturn = 0, sFinalSld = 0;
+      let sFinalBoa = 0, sFinalQeb = 0, sLojas = 0, sMts = 0;
+      let sVolumeRetorno = 0, sVolumeMobiliario = 0, sVolumeQeb = 0;
+
+      cdKeys.forEach(cd => {
+        const d = cdDatabase[cd];
+        const fBoa = Math.max(0, d.initBoa - d.boaToQeb + d.qebToBoa);
+        const fQeb = Math.max(0, d.initQeb + d.boaToQeb - d.qebToBoa - d.qebToSld);
+        const fSld = d.initSld + d.qebToSld;
+        sInitBoa += d.initBoa;
+        sInitQeb += d.initQeb;
+        sInitSld += d.initSld;
+        sBoaQeb += d.boaToQeb;
+        sQebBoa += d.qebToBoa;
+        sQebSld += d.qebToSld;
+        sAvReturn += d.avReturn;
+        sFinalBoa += fBoa;
+        sFinalQeb += fQeb;
+        sFinalSld += fSld;
+        sLojas += d.numLojas;
+        sMts += (d.volumeRetorno + d.volumeMobiliario);
+        sVolumeRetorno += d.volumeRetorno;
+        sVolumeMobiliario += d.volumeMobiliario;
+        sVolumeQeb += d.volumeQeb;
+      });
+
+      const summaryPageSize = 12;
+      const summaryPages = [];
+      for (let i = 0; i < cdKeys.length; i += summaryPageSize) {
+        summaryPages.push(cdKeys.slice(i, i + summaryPageSize));
+      }
+      summaryPages.forEach((summaryCds, summaryIndex) => {
+      const isLastSummaryPage = summaryIndex === summaryPages.length - 1;
+      const summarySlide = `
+        <div class="slide">
+          <div class="top-banner-wrapper">
+            <div class="top-red-stripe"></div>
+            <div class="top-blue-banner">
+              <div class="banner-title" contenteditable="true">Resumo Geral Consolidado (${summaryIndex + 1}/${summaryPages.length})</div>
+              <div class="banner-right">
+                <div class="banner-cd-badge">${fmtBR(sLojas)} Lojas Desmobilizadas</div>
+                <div class="banner-brand">Casas Bahia</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="slide-body">
+            <div class="slide-lead">Consolidação por Unidade Logística (CD) — Sem sobreposição entre códigos de CDs e códigos de Lojas</div>
+            <div class="summary-table-wrap">
+              <table class="summary-table">
+                <colgroup>
+                  <col style="width:9%"><col style="width:5%">
+                  <col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%">
+                  <col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%">
+                  <col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%"><col style="width:7.16%">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Unid. Log. (CD)</th>
+                    <th>Lojas Desmob.</th>
+                    <th>BOA Inicial (01)</th>
+                    <th>QEB Inicial (01)</th>
+                    <th>SLD Inicial (01)</th>
+                    <th>Total Inicial</th>
+                    <th>BOA → QEB (02)</th>
+                    <th>QEB → BOA (03)</th>
+                    <th>QEB &rarr; Saldo (04)</th>
+                    <th>Retorno AV</th>
+                    <th>SLD Final (06)</th>
+                    <th>BOA Final (06)</th>
+                    <th>QEB Final (06)</th>
+                    <th>Total Final</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${summaryCds.map(cd => {
+                    const d = cdDatabase[cd];
+                    const fBoa = Math.max(0, d.initBoa - d.boaToQeb + d.qebToBoa);
+                    const fQeb = Math.max(0, d.initQeb + d.boaToQeb - d.qebToBoa - d.qebToSld);
+                    return `
+                      <tr>
+                        <td><strong>${d.cdTitle}</strong></td>
+                        <td><strong>${fmtBR(d.numLojas)}</strong></td>
+                        <td>${fmtBR(d.initBoa)}</td>
+                        <td>${fmtBR(d.initQeb)}</td>
+                        <td>${fmtBR(d.initSld)}</td>
+                        <td>${fmtBR(d.initBoa + d.initQeb + d.initSld)}</td>
+                        <td style="color:#DF0B1C; font-weight:700;">${fmtBR(d.boaToQeb)}</td>
+                        <td style="color:#004687; font-weight:700;">${fmtBR(d.qebToBoa)}</td>
+                        <td>${fmtBR(d.qebToSld)}</td>
+                        <td>${fmtBR(d.avReturn)}</td>
+                        <td><strong>${fmtBR(d.initSld + d.qebToSld)}</strong></td>
+                        <td><strong>${fmtBR(fBoa)}</strong></td>
+                        <td><strong>${fmtBR(fQeb)}</strong></td>
+                        <td><strong>${fmtBR(fBoa + fQeb + d.initSld + d.qebToSld + d.avReturn)}</strong></td>
+                      </tr>
+                    `;
+                  }).join('')}
+                  ${isLastSummaryPage ? `
+                  <tr class="total-row">
+                    <td>TOTAL GERAL (${cdKeys.length} CDs)</td>
+                    <td>${fmtBR(sLojas)}</td>
+                    <td>${fmtBR(sInitBoa)}</td>
+                    <td>${fmtBR(sInitQeb)}</td>
+                    <td>${fmtBR(sInitSld)}</td>
+                    <td>${fmtBR(sInitBoa + sInitQeb + sInitSld)}</td>
+                    <td>${fmtBR(sBoaQeb)}</td>
+                    <td>${fmtBR(sQebBoa)}</td>
+                    <td>${fmtBR(sQebSld)}</td>
+                    <td>${fmtBR(sAvReturn)}</td>
+                    <td>${fmtBR(sFinalSld)}</td>
+                    <td>${fmtBR(sFinalBoa)}</td>
+                    <td>${fmtBR(sFinalQeb)}</td>
+                    <td>${fmtBR(sFinalBoa + sFinalQeb + sFinalSld + sAvReturn)}</td>
+                  </tr>
+                  ` : ''}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="slide-footer-area">
+            <div class="footer-red-line"></div>
+            <div class="footer-row">
+              <div class="footer-left-text">PLANEJAMENTO LOGÍSTICO • BASE DAT / QEB</div>
+              <div class="footer-center-text">Documento Público</div>
+              <div class="footer-right-page">${pageNum++}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', summarySlide);
+      });
+
+      const overallTotals = [
+        ['CDs ativos', fmtBR(cdKeys.length)],
+        ['Lojas desmobilizadas', fmtBR(sLojas)],
+        ['BOA inicial', fmtBR(sInitBoa)],
+        ['QEB inicial', fmtBR(sInitQeb)],
+        ['Total inicial', fmtBR(sInitBoa + sInitQeb + sInitSld)],
+        ['BOA para QEB', fmtBR(sBoaQeb)],
+        ['QEB para BOA', fmtBR(sQebBoa)],
+        ['SLD inicial', fmtBR(sInitSld)],
+        ['QEB para SLD', fmtBR(sQebSld)],
+        ['SLD final', fmtBR(sFinalSld)],
+        ['Retorno AV sem d&eacute;bito', fmtBR(sAvReturn)],
+        ['BOA final', fmtBR(sFinalBoa)],
+        ['QEB final', fmtBR(sFinalQeb)],
+
+        ['Total final calculado', fmtBR(sFinalBoa + sFinalQeb + sFinalSld + sAvReturn)],
+        ['Volume de retorno (mts)', fmtBR(sVolumeRetorno)],
+        ['Volume de mobiliario/TI/outros (mts)', fmtBR(sVolumeMobiliario)],
+        ['Volume total (mts)', fmtBR(sMts)],
+        ['Cubagem QEB (mts)', fmtBR(sVolumeQeb)]
+      ];
+      const overallTotalsHtml = overallTotals.map(([label, value]) => `
+        <div class="overall-total-item${label === 'Total final calculado' ? ' total-highlight' : ''}">
+          <span>${label}</span><strong>${value}</strong>
+        </div>
+      `).join('');
+      const overallSlide = `
+        <div class="slide">
+          <div class="top-banner-wrapper">
+            <div class="top-red-stripe"></div>
+            <div class="top-blue-banner">
+              <div class="banner-title">Total Geral de Todos os Indicadores</div>
+              <div class="banner-right"><div class="banner-brand">Casas Bahia</div></div>
+            </div>
+          </div>
+          <div class="slide-body">
+            <div class="slide-lead">Somas consolidadas de estoque, movimentacoes, lojas e volumes para todas as filiais.</div>
+            <div class="overall-total-list">${overallTotalsHtml}</div>
+          </div>
+          <div class="slide-footer-area">
+            <div class="footer-red-line"></div>
+            <div class="footer-row">
+              <div class="footer-left-text">PLANEJAMENTO LOGISTICO - BASE DAT / QEB</div>
+              <div class="footer-center-text">Total Geral</div>
+              <div class="footer-right-page">${pageNum++}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', overallSlide);
+
+      const thanksSlide = `
+        <div class="slide">
+          <div class="top-banner-wrapper">
+            <div class="top-red-stripe"></div>
+            <div class="top-blue-banner">
+              <div class="banner-title">Agradecimentos</div>
+              <div class="banner-right"><div class="banner-brand">Casas Bahia</div></div>
+            </div>
+          </div>
+          <div class="cover-body">
+            <div class="cover-tag">PLANEJAMENTO LOGISTICO</div>
+            <div class="cover-main-title">Obrigado!</div>
+            <div class="cover-sub">Desenvolvedor: Lucas Ramalho</div>
+            <div class="cover-sub">Supervisora: Fania Alves</div>
+          </div>
+          <div class="slide-footer-area">
+            <div class="footer-red-line"></div>
+            <div class="footer-row">
+              <div class="footer-left-text">PLANEJAMENTO LOGISTICO - BASE DAT / QEB</div>
+              <div class="footer-center-text">Agradecimentos</div>
+              <div class="footer-right-page">${pageNum++}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', thanksSlide);
+    }
+
+    window.onload = function() {
+      loadSavedSettings();
+      refreshDataFromLocalRoot();
+    };
+  </script>
+</body>
+</html>
